@@ -1,38 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Chat con NY</title>
-</head>
-<body>
-    <h1>Chat Privado</h1>
-    
-    <!-- Aquí se verán los mensajes -->
-    <div id="caja-mensajes" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll;"></div>
-    
-    <!-- Input y botón -->
-    <input type="text" id="texto" placeholder="Escribe a NY...">
-    <button onclick="enviarMensaje()">Enviar</button>
-
-    <!-- 1. IMPORTANTE: Carga la librería de Socket.io desde tu servidor -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charlemos</title>
+    <script src="https://tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
     <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="bg-zinc-950 text-zinc-100 h-screen flex flex-col overflow-hidden">
 
-    <!-- 2. AQUÍ PEGAS EL CÓDIGO QUE TE DI -->
-    <script>
-        const socket = io();
+    <!-- Login Modal -->
+    <div id="login-screen" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+        <div class="bg-zinc-900 p-8 rounded-2xl shadow-2xl border border-zinc-800 w-80 text-center">
+            <h2 class="text-3xl font-bold mb-6 text-blue-500">Charlemos</h2>
+            <input type="text" id="nick-input" placeholder="Tu apodo..." class="w-full p-3 rounded-lg bg-zinc-800 border border-zinc-700 mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
+            <button onclick="iniciarSesion()" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold transition">Entrar</button>
+        </div>
+    </div>
 
-        function enviarMensaje() {
-            const msg = document.getElementById('texto').value;
-            // Enviamos el mensaje al servidor
-            socket.emit('mensaje-a-ny', { cuerpo: msg, user: 'Yo' });
-            document.getElementById('texto').value = ""; // Limpia el input
-        }
+    <!-- Header -->
+    <header class="p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50 backdrop-blur-md">
+        <h1 class="text-4xl font-black text-blue-500 tracking-tighter">C<span class="text-2xl font-light text-white">harlemos</span></h1>
+        <div class="text-xs text-zinc-500">En línea 🟢</div>
+    </header>
 
-        socket.on('mensaje-desde-servidor', (data) => {
-            // Esto hace que el mensaje aparezca en la pantalla
-            const item = document.createElement('p');
-            item.textContent = `${data.user}: ${data.cuerpo}`;
-            document.getElementById('caja-mensajes').appendChild(item);
-        });
-    </script>
+    <main class="flex flex-1 overflow-hidden">
+        <!-- Sidebar de Nicks -->
+        <aside class="w-64 border-r border-zinc-800 bg-zinc-900/30 p-4 hidden md:block">
+            <h3 class="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-4">Amigos conectados</h3>
+            <div id="lista-nicks" class="space-y-3 text-sm">
+                <!-- Los nicks aparecerán aquí -->
+            </div>
+        </aside>
+
+        <!-- Sala de Chat -->
+        <section class="flex-1 flex flex-col">
+            <div id="chat-box" class="flex-1 overflow-y-auto p-6 space-y-4 bg-[url('https://transparenttextures.com')]">
+                <!-- Mensajes aquí -->
+            </div>
+
+            <!-- Área de Escritura -->
+            <footer class="p-4 bg-zinc-900 border-t border-zinc-800">
+                <div class="max-w-4xl mx-auto flex items-end gap-3 bg-zinc-800 p-2 rounded-2xl shadow-lg">
+                    <!-- Multimedia (Gancho) -->
+                    <button class="p-2 hover:bg-zinc-700 rounded-full transition text-zinc-400">
+                        <svg xmlns="http://w3.org" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.51a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                    </button>
+                    
+                    <!-- Emojis -->
+                    <button class="p-2 hover:bg-zinc-700 rounded-full transition text-zinc-400">
+                        <svg xmlns="http://w3.org" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                    </button>
+
+                    <!-- Textarea Amplia -->
+                    <textarea id="msg-input" rows="1" placeholder="Escribe un mensaje..." class="flex-1 bg-transparent border-none focus:ring-0 resize-none py-2 text-zinc-100 max-h-32" oninput="autoResize(this)"></textarea>
+
+                    <!-- Botón Enviar (Avioncito) -->
+                    <button onclick="enviarMensaje()" class="bg-blue-600 hover:bg-blue-500 p-3 rounded-xl shadow-lg shadow-blue-900/20 transition group">
+                        <svg xmlns="http://w3.org" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </button>
+                </div>
+            </footer>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
 </body>
 </html>
