@@ -2,63 +2,56 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Charlemos</title>
-    <script src="https://tailwindcss.com"></script>
+    <title>T-CHAFAS Messenger</title>
     <link rel="stylesheet" href="style.css">
     <script src="/socket.io/socket.io.js"></script>
 </head>
-<body class="bg-[#0f172a] text-slate-200 h-screen flex flex-col p-4 md:p-6 gap-4">
+<body>
 
-    <!-- PANTALLA DE ACCESO (Lo único que se ve al principio) -->
-    <div id="login-screen" class="fixed inset-0 bg-[#0f172a] flex items-center justify-center z-50 p-4">
-        <div class="bg-[#1e293b] p-10 rounded-[2.5rem] border border-slate-700 shadow-2xl w-full max-w-sm text-center">
-            <h1 class="logo-capital text-4xl mb-2">Charlemos</h1>
-            <p class="text-slate-400 text-sm mb-8">Conéctate con tus amigos</p>
+    <!-- PANTALLA DE REGISTRO (Centrada) -->
+    <div id="pantalla-registro" class="pantalla activa">
+        <div class="glass contenido-registro">
+            <h1 class="logo-principal">T-CHAFAS</h1>
+            <div class="titulo-cuadro">Identifícate para entrar</div>
+            <input type="text" id="nick-input" placeholder="Tu Nick aquí...">
             
-            <input type="text" id="nick-input" placeholder="Escribe tu Nick..." 
-                class="w-full bg-[#0f172a] p-4 rounded-2xl border border-slate-700 mb-6 focus:ring-2 focus:ring-blue-500 outline-none text-center text-xl font-semibold">
+            <div class="titulo-cuadro" style="border:none">Elige tu Avatar</div>
+            <div class="grid-avatares">
+                <span onclick="seleccionarAvatar(this)">👤</span>
+                <span onclick="seleccionarAvatar(this)">🐱</span>
+                <span onclick="seleccionarAvatar(this)">🤖</span>
+                <span onclick="seleccionarAvatar(this)">😎</span>
+            </div>
             
-            <button onclick="iniciarSesion()" 
-                class="w-full bg-blue-600 p-4 rounded-2xl font-bold text-lg hover:bg-blue-500 transition-all shadow-lg active:scale-95">
-                Comenzar a charlar
-            </button>
+            <button onclick="entrar()" class="btn-enviar" style="width: 200px; height: 50px; font-weight: bold;">COMENZAR</button>
         </div>
     </div>
 
-    <!-- CONTENEDOR PRINCIPAL DEL CHAT (Oculto con 'hidden') -->
-    <div id="app-container" class="hidden flex flex-col h-full gap-4 overflow-hidden">
-        
-        <!-- Header -->
-        <header class="h-16 flex items-center px-6 bg-[#1e293b] rounded-2xl shadow-lg border border-slate-700/50">
-            <h1 class="logo-capital text-xl">Charlemos</h1>
-        </header>
+    <!-- SALA DE CHAT (Se activa al entrar) -->
+    <div id="sala-chat" class="pantalla" style="width: 100%; max-width: 650px;">
+        <h1 class="logo-principal">T-CHAFAS</h1>
 
-        <div class="flex flex-1 gap-4 overflow-hidden">
-            <!-- AREA NICKS -->
-            <aside class="w-72 bg-[#1e293b] rounded-3xl border border-slate-700/50 shadow-xl flex flex-col hidden md:flex">
-                <div class="p-5 border-b border-slate-700/50">
-                    <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">Amigos en Línea</h3>
-                </div>
-                <div id="lista-nicks" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
-            </aside>
+        <!-- CUADRO USUARIOS -->
+        <div class="glass cuadro-usuarios">
+            <div class="titulo-cuadro">Amigos conectados</div>
+            <div id="lista-usuarios"></div>
+        </div>
 
-            <!-- AREA CHAT -->
-            <main class="flex-1 bg-[#1e293b] rounded-3xl border border-slate-700/50 shadow-xl flex flex-col overflow-hidden">
-                <div id="chat-box" class="flex-1 overflow-y-auto p-6 space-y-4 bg-[#0f172a]/30"></div>
+        <!-- CUADRO CHAT -->
+        <div class="glass cuadro-chat">
+            <div class="titulo-cuadro">Sala de Chat Global</div>
+            <div id="mensajes"></div>
+        </div>
 
-                <!-- AREA ESCRIBIR -->
-                <footer class="p-4 bg-[#1e293b] border-t border-slate-700/50">
-                    <div class="flex items-end gap-3 bg-[#0f172a] rounded-2xl p-3 border border-slate-700/50">
-                        <button class="p-2 text-slate-400 hover:text-blue-400 transition">
-                            <svg xmlns="http://w3.org" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.51a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                        </button>
-                        <textarea id="msg-input" rows="1" placeholder="Escribe un mensaje..." class="flex-1 bg-transparent border-none focus:ring-0 resize-none py-1 text-base outline-none"></textarea>
-                        <button onclick="enviarMensaje()" class="bg-blue-600 hover:bg-blue-500 p-3 rounded-xl transition-all shadow-lg">
-                            <svg xmlns="http://w3.org" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                        </button>
-                    </div>
-                </footer>
-            </main>
+        <!-- ÁREA DE ESCRITURA -->
+        <div class="glass">
+            <div id="form">
+                <span class="btn-clip">📎</span>
+                <input type="text" id="input" placeholder="Escribe un mensaje...">
+                <button onclick="enviar()" class="btn-enviar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                </button>
+            </div>
         </div>
     </div>
 

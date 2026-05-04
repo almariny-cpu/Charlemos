@@ -1,37 +1,161 @@
-/* Letra Capital */
-.logo-capital::first-letter {
-    font-size: 1.6em;
-    font-weight: 900;
-    color: #3b82f6;
+@import url('https://googleapis.com');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: #0b0e14;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    height: 100vh;
+}
+
+/* TÍTULO PRINCIPAL T-CHAFAS */
+.logo-principal {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3.5rem;
+    font-style: italic;
+    color: #2563eb;
+    margin: 20px 0;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* CUADROS ESTILO GLASS */
+.glass {
+    background-color: #161b22;
+    border: 2px solid #30363d;
+    border-radius: 32px;
+    width: 100%;
+    max-width: 650px;
+    margin-bottom: 25px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-cuadro {
+    text-align: center;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid #30363d;
+    font-size: 11px;
+    font-weight: 700;
+    color: #58a6ff;
+    letter-spacing: 2px;
     text-transform: uppercase;
 }
 
-.logo-capital {
-    font-weight: 700;
-    letter-spacing: -1px;
+/* ÁREA DE PARTICIPANTES */
+.cuadro-usuarios { height: 130px; }
+#lista-usuarios { padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.user-tag { background: #0d1117; padding: 6px 12px; border-radius: 12px; border: 1px solid #334155; font-size: 12px; }
+
+/* SALÓN DE CHAT Y SCROLL AZUL */
+.cuadro-chat { height: 50vh; }
+#mensajes { 
+    flex: 1; 
+    overflow-y: auto !important; 
+    padding: 30px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
 }
+#mensajes::-webkit-scrollbar { width: 8px; }
+#mensajes::-webkit-scrollbar-thumb { background: #58a6ff; border-radius: 10px; }
 
-/* Scrollbars Modernos */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+/* GLOBOS DE CHAT REFINADOS */
+/* --- GLOBOS CON ESTILO DE CONVERSACIÓN (PUNTAS Y ALINEACIÓN) --- */
 
-/* Estilo de Mensajes tipo WhatsApp */
 .burbuja {
-    padding: 10px 16px;
-    border-radius: 1.25rem;
-    font-size: 0.95rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    max-width: 80%;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 12px;
     position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-.mia { 
-    background: #2563eb; 
-    color: white; 
-    border-bottom-right-radius: 0.25rem;
+/* TUS MENSAJES (Derecha con punta) */
+.mia {
+    align-self: flex-end;
+    background: #c8e6c9;
+    color: #1b5e20;
+    flex-direction: row-reverse;
+    border-radius: 20px 20px 4px 20px; /* Punta abajo a la derecha */
 }
 
-.otra { 
-    background: #334155; 
-    color: #f1f5f9; 
-    border-bottom-left-radius: 0.25rem;
+/* MENSAJES DE OTROS (Izquierda con punta) */
+.suya {
+    align-self: flex-start;
+    background: #21262d;
+    border: 1px solid #334155;
+    color: #f0f6fc;
+    border-radius: 20px 20px 20px 4px; /* Punta abajo a la izquierda */
 }
+
+/* AJUSTES INTERNOS PARA QUE EL TEXTO NO SE JUNTE AL AVATAR */
+.c {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* TEXTOS DIFERENCIADOS DENTRO DEL GLOBO */
+.nick-bubble {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #58a6ff;
+    margin-bottom: 4px;
+}
+
+.texto-msg {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.texto-info {
+    font-size: 9px;
+    font-weight: 300;
+    opacity: 0.6;
+    text-align: right;
+    margin-top: 6px;
+}
+
+/* MULTIMEDIA AJUSTADA AL GLOBO */
+.burbuja img, .burbuja video {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-top: 10px;
+    display: block;
+}
+
+
+/* DIFERENCIACIÓN DE TEXTOS */
+.nick-bubble { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #58a6ff; margin-bottom: 4px; display: block; }
+.texto-msg { font-size: 16px; font-weight: 400; line-height: 1.5; }
+.texto-info { font-size: 10px; font-weight: 300; opacity: 0.6; text-align: right; margin-top: 6px; display: block; }
+
+
+/* ÁREA DE ESCRITURA - ALINEACIÓN 80% */
+#form { display: flex; align-items: center; gap: 15px; padding: 20px; width: 100%; }
+#input { width: 80%; background: #0d1117; border: 1px solid #30363d; padding: 15px; border-radius: 18px; color: white; outline: none; }
+.btn-clip { font-size: 26px; cursor: pointer; color: #8b949e; }
+.btn-enviar { background: #2563eb; border: none; padding: 12px 18px; border-radius: 15px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* PANTALLA DE REGISTRO CENTRADA */
+.pantalla { display: none; width: 100%; flex-direction: column; align-items: center; }
+.activa { display: flex; }
+#pantalla-registro { height: 100vh; justify-content: center; background: #0b0e14; position: fixed; inset: 0; z-index: 1000; }
+.contenido-registro { padding: 40px; display: flex; flex-direction: column; align-items: center; width: 100%; }
+#nick-input { width: 100%; padding: 15px; background: #0d1117; border: 1px solid #30363d; border-radius: 15px; color: white; text-align: center; margin-bottom: 25px; font-size: 1.2rem; }
+.grid-avatares { display: flex; gap: 15px; margin-bottom: 30px; }
+.grid-avatares span { font-size: 45px; cursor: pointer; padding: 10px; border-radius: 18px; border: 2px solid transparent; transition: 0.2s; }
+.seleccionado { border-color: #2563eb !important; background: rgba(37, 99, 235, 0.15); }

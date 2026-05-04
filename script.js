@@ -1,65 +1,61 @@
 const socket = io();
 let miNick = "";
-let miAvatar = "";
+let miAvatar = "👤";
 
-function iniciarSesion() {
+function seleccionarAvatar(el) {
+    document.querySelectorAll('.grid-avatares span').forEach(s => s.classList.remove('seleccionado'));
+    el.classList.add('seleccionado');
+    miAvatar = el.innerText;
+}
+
+function entrar() {
     const input = document.getElementById('nick-input');
     if (input.value.trim() !== "") {
         miNick = input.value;
-        miAvatar = `https://dicebear.com{miNick}`;
+        document.getElementById('pantalla-registro').classList.remove('activa');
+        document.getElementById('sala-chat').classList.add('activa');
         
-        // 1. Ocultamos el login y MOSTRAMOS la app
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('app-container').classList.remove('hidden');
-        
-        // 2. Agregamos nuestro nick a la lista
-        const lista = document.getElementById('lista-nicks');
-        lista.innerHTML = `
-            <div class="flex items-center gap-3 p-3 bg-blue-500/10 rounded-2xl border border-blue-500/20">
-                <img src="${miAvatar}" class="w-10 h-10 rounded-full bg-slate-800">
-                <span class="font-bold text-blue-400 text-sm">${miNick} (Tú)</span>
-            </div>
-        `;
+        // Agregarme a la lista
+        const lista = document.getElementById('lista-usuarios');
+        lista.innerHTML += `<div class="user-tag">🟢 ${miNick}</div>`;
     }
 }
 
-function enviarMensaje() {
-    const input = document.getElementById('msg-input');
+function enviar() {
+    const input = document.getElementById('input');
     if (input.value.trim() !== "") {
+        const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         socket.emit('mensaje-a-ny', {
             user: miNick,
             avatar: miAvatar,
-            cuerpo: input.value
+            cuerpo: input.value,
+            tiempo: hora
         });
         input.value = "";
     }
 }
 
 socket.on('mensaje-desde-servidor', (data) => {
-    const chatBox = document.getElementById('chat-box');
+    const box = document.getElementById('mensajes');
     const esMio = data.user === miNick;
     
     const div = document.createElement('div');
-    div.className = `flex ${esMio ? 'justify-end' : 'justify-start'} w-full animate-in fade-in slide-in-from-bottom-2 duration-300`;
+    div.className = `burbuja ${esMio ? 'mia' : 'suya'}`;
     
     div.innerHTML = `
-        <div class="flex ${esMio ? 'flex-row-reverse' : 'flex-row'} items-end gap-2 max-w-[85%]">
-            <img src="${data.avatar}" class="w-8 h-8 rounded-full bg-slate-700 shadow-sm">
-            <div class="p-3 rounded-2xl text-sm shadow-md ${esMio ? 'bg-blue-600 text-white rounded-br-none' : 'bg-slate-700 text-slate-100 rounded-bl-none'}">
-                <p class="text-[10px] font-black uppercase opacity-60 mb-1">${data.user}</p>
-                <p>${data.cuerpo}</p>
-            </div>
+        <span style="font-size: 24px;">${data.avatar}</span>
+        <div class="c">
+            <span class="nick-bubble">${data.user}</span>
+            <span class="texto-msg">${data.cuerpo}</span>
+            <span class="texto-info">${data.tiempo}</span>
         </div>
     `;
     
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
 });
 
 // Enviar con Enter
-document.getElementById('msg-input')?.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        enviarMensaje();
-    }
+document.getElementById('input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') enviar();
 });
