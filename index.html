@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat con NY</title>
+</head>
+<body>
+    <h1>Chat Privado</h1>
+    
+    <!-- Aquí se verán los mensajes -->
+    <div id="caja-mensajes" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll;"></div>
+    
+    <!-- Input y botón -->
+    <input type="text" id="texto" placeholder="Escribe a NY...">
+    <button onclick="enviarMensaje()">Enviar</button>
+
+    <!-- 1. IMPORTANTE: Carga la librería de Socket.io desde tu servidor -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- 2. AQUÍ PEGAS EL CÓDIGO QUE TE DI -->
+    <script>
+        const socket = io();
+
+        function enviarMensaje() {
+            const msg = document.getElementById('texto').value;
+            // Enviamos el mensaje al servidor
+            socket.emit('mensaje-a-ny', { cuerpo: msg, user: 'Yo' });
+            document.getElementById('texto').value = ""; // Limpia el input
+        }
+
+        socket.on('mensaje-desde-servidor', (data) => {
+            // Esto hace que el mensaje aparezca en la pantalla
+            const item = document.createElement('p');
+            item.textContent = `${data.user}: ${data.cuerpo}`;
+            document.getElementById('caja-mensajes').appendChild(item);
+        });
+    </script>
+</body>
+</html>
