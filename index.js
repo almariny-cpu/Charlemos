@@ -7,21 +7,20 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const PORT = process.env.PORT || 3000;
+// --- ESTA ES LA LÍNEA QUE DEBES AGREGAR ---
+app.use(express.static(__dirname)); 
 
-// ESTA PARTE ES LA QUE EVITA EL ERROR "CANNOT GET /"
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 io.on('connection', (socket) => {
-    console.log('Alguien se conectó');
     socket.on('mensaje-a-ny', (data) => {
         io.emit('mensaje-desde-servidor', data);
     });
 });
 
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`Servidor corriendo en puerto ${PORT}`);
+    console.log(`Servidor en puerto ${PORT}`);
 });
-
